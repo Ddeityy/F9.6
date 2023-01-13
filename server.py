@@ -46,7 +46,7 @@ def main():
     app = web.Application()
     app["sockets"] = []
     app.router.add_route("GET", "/news", ws_handler)
-    app.router.add_route("POST", "/post", post_handler)
+    app.router.add_route("POST", "/news", post_handler)
     app.on_shutdown.append(on_shutdown)
     web.run_app(app, host="127.0.0.1", port="6969")
 

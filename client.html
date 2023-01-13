@@ -19,7 +19,7 @@
             log('Connecting...');
             conn.onopen = function () {
                 log('Connected.');
-                const interval = setInterval(() => conn.send(""), 30000);
+                const interval = setInterval(() => conn.send(""), 25000);
             };
             conn.onmessage = function (e) {
                 if (!e.data == "") {
@@ -35,7 +35,7 @@
             };
             $('#post_news').click(function () {
                 $.ajax({
-                    url: "https://web.ddeityy.ru/post",
+                    url: "https://web.ddeityy.ru/news",
                     type: "POST",
                     dataType: "json",
                     contentType: "application/json",
@@ -54,9 +54,6 @@
 
 <body>
     <h3>News!</h3>
-    <div>
-        <button id="check_status">Check status</button>
-    </div>
     <div id="log" style="width:20em;height:15em;overflow:auto;border:1px solid black">
     </div>
     <div>
