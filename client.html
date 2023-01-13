@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+<meta charset="utf-8" />
+<html>
+
+<head>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js">
+    </script>
+    <script language="javascript" type="text/javascript">
+        $(function () {
+            var conn = null;
+            function log(msg) {
+                var control = $('#log');
+                control.html(control.html() + msg + '<br/>');
+                control.scrollTop(control.scrollTop() + 1000);
+            }
+            var wsUri = (window.location.protocol == 'https:' && 'wss://' || 'ws://') + window.location.host + "/news";
+            conn = new WebSocket(wsUri);
+            log('Connecting...');
+            conn.onopen = function () {
+                log('Connected.');
+                const interval = setInterval(() => conn.send(""), 30000);
+            };
+            conn.onmessage = function (e) {
+                if (!e.data == "") {
+                    log(e.data);
+                }
+            };
+            conn.onclose = function () {
+                log('Disconnected.');
+                conn = null;
+            };
+            async function checkStatus(e) {
+                await conn.send(e)
+            };
+            $('#post_news').click(function () {
+                $.ajax({
+                    url: "https://web.ddeityy.ru/post",
+                    type: "POST",
+                    dataType: "json",
+                    contentType: "application/json",
+                    data: JSON.stringify({ "news": "news" }),
+                    success: (data, status) => {
+                        console.log(status);
+                    },
+                    error: (result, status, error) => {
+                        console.log(error);
+                    }
+                })
+            })
+        })
+    </script>
+</head>
+
+<body>
+    <h3>News!</h3>
+    <div>
+        <button id="check_status">Check status</button>
+    </div>
+    <div id="log" style="width:20em;height:15em;overflow:auto;border:1px solid black">
+    </div>
+    <div>
+        <button id="post_news">Post News</button>
+    </div>
+</body>
+
+</html>
