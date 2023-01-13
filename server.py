@@ -4,7 +4,7 @@ from aiohttp import web, ClientSession
 
 async def post_handler(request):
     data = await request.json()
-    async with ClientSession().ws_connect("http://web.ddeityy.ru/news") as ws:
+    async with ClientSession().ws_connect("http://127.0.0.1:6969/news") as ws:
         await ws.send_str(data["news"])
         await ws.close()
     return web.Response(status=200)
