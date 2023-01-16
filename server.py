@@ -3,7 +3,7 @@ from aiohttp import web, ClientSession
 
 async def post_handler(request):
     data = await request.json()
-    async with ClientSession().ws_connect("http://127.0.0.1:6969/news") as ws:
+    async with ClientSession().ws_connect("http://127.0.0.1:6969/") as ws:
         await ws.send_str(data["news"])
         await ws.close()
     return web.Response(status=200)
@@ -44,7 +44,7 @@ async def on_shutdown(app: web.Application):
 def main():
     app = web.Application()
     app["sockets"] = []
-    app.router.add_route("GET", "/news", ws_handler)
+    app.router.add_route("GET", "/", ws_handler)
     app.router.add_route("POST", "/news", post_handler)
     app.on_shutdown.append(on_shutdown)
     web.run_app(app, host="127.0.0.1", port="6969")

@@ -15,35 +15,42 @@
           control.html(control.html() + msg + "<br/>");
           control.scrollTop(control.scrollTop() + 1000);
         }
-        var wsUri =
-          ((window.location.protocol == "https:" && "wss://") || "ws://") +
-          window.location.host +
-          "/news";
-        conn = new WebSocket(wsUri);
-        log("Connecting...");
-        conn.onopen = function () {
-          log("Connected.");
-          const interval = setInterval(() => conn.send(""), 25000);
-        };
-        conn.onmessage = function (e) {
-          if (!e.data == "") {
-            log(e.data);
-          }
-        };
-        conn.onclose = function () {
-          log("Disconnected.");
-          conn = null;
-        };
-        async function checkStatus(e) {
-          await conn.send(e);
+        function connect() {
+          var wsUri =
+            ((window.location.protocol == "https:" && "wss://") || "ws://") +
+            window.location.host;
+          conn = new WebSocket(wsUri);
+          log("Connecting...");
+          conn.onopen = function () {
+            log("Connected.");
+          };
+          conn.onmessage = function (e) {
+            if (!e.data == "") {
+              log(e.data);
+            }
+          };
+          conn.onclose = function () {
+            log("Disconnected.");
+            conn = null;
+            // reconnect websocket on timeout
+            connect();
+          };
         }
+        connect();
+        $("#text").keyup(function (e) {
+          if (e.keyCode === 13) {
+            $("#post_news").click();
+            return false;
+          }
+        });
         $("#post_news").click(function () {
+          var text = $("#text").val();
           $.ajax({
             url: "http://127.0.0.1:6969/news",
             type: "POST",
             dataType: "json",
             contentType: "application/json",
-            data: JSON.stringify({ news: "news" }),
+            data: JSON.stringify({ news: text }),
             success: (data, status) => {
               console.log(status);
             },
@@ -68,7 +75,10 @@
       "
     ></div>
     <div>
-      <button id="post_news">Post News</button>
+      <form id="post_news" onsubmit="return false;">
+        <input id="text" type="text" />
+        <input id="send" type="button" value="Send news" />
+      </form>
     </div>
   </body>
 </html>
